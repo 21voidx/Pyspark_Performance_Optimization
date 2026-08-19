@@ -1,0 +1,19 @@
+.env
+__pycache__/
+*.pyc
+
+# Data and generated outputs
+data/raw/yellow/*.parquet
+data/lookup/*.csv
+data/prepared/*
+!data/prepared/.gitkeep
+output/*
+!output/baseline/
+!output/optimized/
+!output/baseline/.gitkeep
+!output/optimized/.gitkeep
+spark-events/*
+!spark-events/.gitkeep
+benchmark/results.csv
+
+.DS_Store

@@ -1,0 +1,78 @@
+name: pyspark-performance-lab
+
+x-spark-common: &spark-common
+  image: ${SPARK_IMAGE:-apache/spark:4.2.0-python3}
+  restart: unless-stopped
+  volumes:
+    - ./:/opt/spark/work-dir/project
+    - ./conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+  networks:
+    - spark-lab
+
+services:
+  spark-master:
+    <<: *spark-common
+    hostname: spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.master.Master
+      - --host
+      - spark-master
+      - --port
+      - "7077"
+      - --webui-port
+      - "8080"
+    ports:
+      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_MASTER_UI_HOST_PORT:-19080}:8080"
+      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_APP_UI_HOST_PORT:-14040}:4040"
+
+  spark-worker-1:
+    <<: *spark-common
+    hostname: spark-worker-1
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "${SPARK_WORKER_CORES:-2}"
+      - --memory
+      - "${SPARK_WORKER_MEMORY:-2g}"
+      - --webui-port
+      - "8081"
+    ports:
+      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_WORKER1_UI_HOST_PORT:-19081}:8081"
+
+  spark-worker-2:
+    <<: *spark-common
+    hostname: spark-worker-2
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "${SPARK_WORKER_CORES:-2}"
+      - --memory
+      - "${SPARK_WORKER_MEMORY:-2g}"
+      - --webui-port
+      - "8081"
+    ports:
+      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_WORKER2_UI_HOST_PORT:-19082}:8081"
+
+  spark-history:
+    <<: *spark-common
+    hostname: spark-history
+    depends_on:
+      - spark-master
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.history.HistoryServer
+    ports:
+      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_HISTORY_UI_HOST_PORT:-18080}:18080"
+
+networks:
+  spark-lab:
+    driver: bridge
