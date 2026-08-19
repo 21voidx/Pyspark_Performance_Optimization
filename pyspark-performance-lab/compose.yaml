@@ -23,8 +23,8 @@ services:
       - --webui-port
       - "8080"
     ports:
-      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_MASTER_UI_HOST_PORT:-19080}:8080"
-      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_APP_UI_HOST_PORT:-14040}:4040"
+      - "${UI_BIND_ADDRESS}:${SPARK_MASTER_UI_HOST_PORT:-19080}:8080"
+      - "${UI_BIND_ADDRESS}:${SPARK_APP_UI_HOST_PORT:-14040}:4040"
 
   spark-worker-1:
     <<: *spark-common
@@ -42,7 +42,7 @@ services:
       - --webui-port
       - "8081"
     ports:
-      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_WORKER1_UI_HOST_PORT:-19081}:8081"
+      - "${UI_BIND_ADDRESS}:${SPARK_WORKER1_UI_HOST_PORT:-19081}:8081"
 
   spark-worker-2:
     <<: *spark-common
@@ -60,7 +60,7 @@ services:
       - --webui-port
       - "8081"
     ports:
-      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_WORKER2_UI_HOST_PORT:-19082}:8081"
+      - "${UI_BIND_ADDRESS}:${SPARK_WORKER2_UI_HOST_PORT:-19082}:8081"
 
   spark-history:
     <<: *spark-common
@@ -71,7 +71,7 @@ services:
       - /opt/spark/bin/spark-class
       - org.apache.spark.deploy.history.HistoryServer
     ports:
-      - "${UI_BIND_ADDRESS:-127.0.0.1}:${SPARK_HISTORY_UI_HOST_PORT:-18080}:18080"
+      - "${UI_BIND_ADDRESS}:${SPARK_HISTORY_UI_HOST_PORT:-18080}:18080"
 
 networks:
   spark-lab:
